@@ -1,52 +1,71 @@
-name: 部署网页
-
-# ============================================================
-#  跨境周知 · 把 app 目录发布成在线网页（GitHub Pages）
-# ============================================================
-#  触发时机：
-#    - 每次 main 分支有推送（含每日抓取提交的内容）
-#    - 也可以在 GitHub 网页上手动点「Run workflow」
-#  部署完成后，访问地址为：
-#    https://你的用户名.github.io/仓库名/
-# ============================================================
+name: 每日情报自动抓取
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'app/**'
-      - '.github/workflows/deploy.yml'
+  schedule:
+    - cron: '30 22 * * *'
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# 同一时间只跑一个部署任务，避免冲突
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  contents: write
 
 jobs:
-  deploy:
+  fetch:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 15
 
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
 
-      - name: 配置 Pages
-        uses: actions/configure-pages@v5
-
-      - name: 打包 app 目录
-        uses: actions/upload-pages-artifact@v3
+      - name: 安装 Python
+        uses: actions/setup-python@v5
         with:
-          path: ./app
+          python-version: '3.11'
 
-      - name: 部署到 Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: 抓取并生成今日情报
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          API_PROVIDER: ${{ secrets.API_PROVIDER || 'zhipu' }}
+        run: |
+          python auto_fetch.py
+
+      - name: 同步内容到网页目录
+        run: |
+          cp content.json app/content.json
+          echo "已同步到 app/content.json"
+
+      - name: 提交更新
+        run: |
+          git config user.name "跨境周知机器人"
+          git config user.email "bot@users.noreply.github.com"
+
+          for f in app/content.json content.json pending_news.json fetch.log; do
+            [ -f "$f" ] && git add "$f" || true
+          done
+
+          if git diff --staged --quiet; then
+            echo "今日内容无变化，跳过提交"
+            exit 0
+          fi
+
+          git commit -m "🤖 每日情报自动更新 $(date -u '+%Y-%m-%d')"
+
+          git pull --rebase --autostash origin ${GITHUB_REF_NAME:-main} || true
+          git push
+          echo "✅ 已提交并推送"
+
+      - name: 上传运行日志
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetch-log-${{ github.run_number }}
+          path: |
+            fetch.log
+            pending_news.json
+          retention-days: 7
+          if-no-files-found: ignore
