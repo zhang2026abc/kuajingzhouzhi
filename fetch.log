@@ -62,3 +62,22 @@
 [2026-10-12 11:57:14] 👉 请配置 API_KEY 后重跑，或手动处理 pending_news.json
 [2026-10-12 11:57:14] ✅ 输出 → /workspace/cbec-daily/content.json
 [2026-10-12 11:57:14] 📌 下一步：cp content.json app/content.json
+[2026-10-12 13:35:58] ======================================================
+[2026-10-12 13:35:58]   跨境周知 · 每日情报自动生成
+[2026-10-12 13:35:58] ======================================================
+[2026-10-12 13:35:58]   ✅ 人民网财经：100 条（新增 100）
+[2026-10-12 13:35:58]   ✅ 人民网国际：100 条（新增 98）
+[2026-10-12 13:36:00]   ✅ 新华网财经：297 条（新增 275）
+[2026-10-12 13:36:01]   ✅ 中新网国际：30 条（新增 30）
+[2026-10-12 13:36:04]   ✅ 东方财富：98 条（新增 97）
+[2026-10-12 13:36:04] 📥 共抓取去重后 600 条原始新闻
+[2026-10-12 13:36:04] 🎯 相关性预筛后剩 131 条（关键词命中）
+[2026-10-12 13:36:04] 💾 待处理清单已存至 pending_news.json
+[2026-10-12 13:36:04] 🤖 调用 zhipu / glm-4-flash ……
+[2026-10-12 13:36:06]   ⚠️  第 1 次调用失败：HTTPError 401 Client Error: Unauthorized for url: https://open.bigmodel.cn/api/paas/v4/cha
+[2026-10-12 13:36:09]   ⚠️  第 2 次调用失败：HTTPError 401 Client Error: Unauthorized for url: https://open.bigmodel.cn/api/paas/v4/cha
+[2026-10-12 13:36:12]   ⚠️  第 3 次调用失败：HTTPError 401 Client Error: Unauthorized for url: https://open.bigmodel.cn/api/paas/v4/cha
+[2026-10-12 13:36:15] ℹ️  未调用 AI（缺少 API Key），content.json 保持不变
+[2026-10-12 13:36:15] 👉 请配置 API_KEY 后重跑，或手动处理 pending_news.json
+[2026-10-12 13:36:15] ✅ 输出 → /home/runner/work/kuajingzhouzhi/kuajingzhouzhi/content.json
+[2026-10-12 13:36:15] 📌 下一步：cp content.json app/content.json
