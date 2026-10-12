@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d7a68">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>跨境周知</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --brand:#0d7a68; --brand-deep:#0a5f51; --brand-soft:#e3f2ee; --brand-softer:#f2f9f7;
+  --bg:#f6f8f7; --card:#fff; --ink:#1d2b28; --sub:#7a8a86; --line:#e6ede b;
+  --line:#e6edeb; --amber:#b8860b; --amber-bg:#fdf6e3; --red:#c0392b;
+  --radius:14px; --shadow:0 1px 8px rgba(13,122,104,.07); --tab-h:54px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg)}
+
+/* ===== 顶栏 ===== */
+.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;display:flex;align-items:center;gap:11px}
+.top .logo{width:40px;height:40px;border-radius:11px;background:var(--brand);display:grid;place-items:center;flex-shrink:0}
+.top .logo svg{width:24px;height:24px}
+.top .name{font-size:19px;font-weight:800;letter-spacing:.5px}
+.top .slogan{font-size:11px;color:var(--sub);line-height:1.45;margin-top:2px}
+
+/* ===== 页面 ===== */
+.page{display:none;padding:12px 14px calc(var(--tab-h) + env(safe-area-inset-bottom) + 24px)}
+.page.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== 搜索 ===== */
+.search{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;
+  padding:10px 14px 10px 36px;font-size:13.5px;outline:none;font-family:inherit;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a8a86' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:13px center}
+.search:focus{border-color:var(--brand)}
+
+/* ===== 筛选 chips ===== */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:10px 1px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:5.5px 13px;border-radius:19px;font-size:12px;background:#fff;
+  color:#5a6b67;border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:.15s}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:600}
+.chips-label{font-size:10.5px;color:#a8b5b2;padding:8px 2px 0}
+
+/* ===== 日期卡 ===== */
+.dates{display:flex;gap:9px;overflow-x:auto;padding:10px 1px 4px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.date-card{flex:0 0 128px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:12px 13px;cursor:pointer;transition:.15s}
+.date-card:active{transform:scale(.97)}
+.date-card .row{display:flex;align-items:baseline;gap:5px}
+.date-card .d{font-size:24px;font-weight:800;color:var(--brand)}
+.date-card .m{font-size:11px;color:var(--sub);font-weight:600}
+.date-card .t{font-size:11.5px;line-height:1.5;color:#3d4f4b;margin-top:7px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.date-card .tag{display:inline-block;font-size:9.5px;color:var(--brand);background:var(--brand-soft);
+  padding:1.5px 7px;border-radius:8px;margin-top:7px;font-weight:600}
+
+/* ===== 情报列表 ===== */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:16px 2px 9px}
+.sec-head h3{font-size:15px;font-weight:700}
+.sec-head span{font-size:11px;color:var(--sub)}
+.news{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.news:active{transform:scale(.985)}
+.news .meta{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.news .src{font-size:10px;font-weight:600;color:var(--brand);background:var(--brand-soft);padding:2px 7px;border-radius:5px}
+.news .date{font-size:10px;color:#a8b5b2}
+.news h4{font-size:14.5px;font-weight:700;line-height:1.5}
+.news p{font-size:12.5px;color:#5a6b67;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news .dots{display:flex;gap:5px;margin-top:9px}
+.news .dots i{width:5px;height:5px;border-radius:50%;background:var(--brand);opacity:.25}
+.news .dots i.f{opacity:1}
+.news.locked::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(255,255,255,.9))}
+
+/* ===== 详情页 ===== */
+.detail-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;
+  background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:calc(env(safe-area-inset-top) + 64px);z-index:15}
+.detail-top .back{font-size:14px;color:var(--brand);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px}
+.detail-top .t{font-size:14.5px;font-weight:700}
+.detail-top .icons{display:flex;gap:14px;font-size:16px}
+
+/* 航线图 */
+.route-map{background:var(--amber-bg);border-radius:var(--radius);padding:18px 16px 8px;margin-bottom:12px}
+.route-map svg{width:100%;height:auto;display:block}
+.route-label{text-align:center;font-size:11px;color:var(--amber);font-weight:700;margin-top:2px}
+
+.hotword{display:inline-block;font-size:11px;color:var(--brand);background:var(--brand-soft);
+  padding:3px 10px;border-radius:6px;font-weight:700;margin-bottom:10px}
+.detail h2{font-size:19px;font-weight:800;line-height:1.45}
+.detail .src-line{font-size:11px;color:var(--sub);margin-top:8px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.fact-title{font-size:14px;font-weight:800;margin:16px 2px 8px}
+.facts{list-style:none}
+.facts li{display:flex;gap:8px;font-size:13px;color:#3d4f4b;padding:5px 0;line-height:1.65}
+.facts li::before{content:"✓";color:var(--brand);font-weight:800;flex-shrink:0}
+
+.insight-block{background:var(--brand-softer);border-radius:var(--radius);padding:13px 14px;margin-bottom:9px}
+.insight-block .lbl{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:5px}
+.insight-block p{font-size:13px;color:#2e403c;line-height:1.75}
+.tb-ref{background:var(--amber-bg);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px}
+.tb-ref .lbl{font-size:12px;font-weight:800;color:var(--amber);margin-bottom:4px}
+.tb-ref .book{font-size:13px;font-weight:700;color:#7a5c10}
+.tb-ref .point{font-size:12px;color:#96742c;margin-top:2px}
+.origin-btn{display:block;width:100%;text-align:center;background:#fff;border:1px solid var(--line);
+  border-radius:24px;padding:11px;font-size:13.5px;font-weight:600;color:var(--brand);cursor:pointer;margin-top:14px;font-family:inherit}
+
+/* ===== 成长页 ===== */
+.grade-tabs{display:flex;background:var(--card);border-radius:12px;padding:4px;margin-bottom:14px;box-shadow:var(--shadow)}
+.grade-tabs div{flex:1;text-align:center;padding:8px 0;font-size:13px;color:var(--sub);border-radius:9px;cursor:pointer;font-weight:600;transition:.15s}
+.grade-tabs div.on{background:var(--brand);color:#fff}
+.growth-intro{font-size:11.5px;color:var(--sub);margin:0 2px 12px}
+.k-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:10px}
+.k-card .head{display:flex;align-items:flex-start;gap:11px}
+.k-card .ico{width:38px;height:38px;border-radius:10px;background:var(--brand-soft);display:grid;place-items:center;flex-shrink:0;
+  color:var(--brand);font-weight:800;font-size:15px}
+.k-card .t{font-size:14.5px;font-weight:700;line-height:1.45}
+.k-card .arrow{margin-left:auto;color:#c4cfcc;font-size:16px;flex-shrink:0}
+.k-card p{font-size:12.5px;color:#5a6b67;margin-top:9px;line-height:1.7}
+.k-card .chapters{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.k-card .chapters span{font-size:10.5px;background:var(--brand-softer);color:var(--brand);padding:3px 10px;border-radius:6px;font-weight:600}
+.k-card .rel{font-size:11px;color:#a8b5b2;margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+.sec-sub{font-size:15px;font-weight:700;margin:18px 2px 9px}
+.lang-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.lang-row::-webkit-scrollbar{display:none}
+.lang-pill{flex:0 0 auto;background:var(--card);border-radius:20px;padding:8px 15px;font-size:12.5px;
+  font-weight:600;color:#3d4f4b;box-shadow:var(--shadow)}
+
+/* ===== 国别页 ===== */
+.mode-tabs{display:flex;gap:8px;margin-bottom:13px}
+.mode-tabs div{flex:1;text-align:center;padding:9px 0;border-radius:11px;font-size:13px;font-weight:600;
+  background:var(--card);color:var(--sub);cursor:pointer;box-shadow:var(--shadow);border:1.5px solid transparent;transition:.15s}
+.mode-tabs div.on{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.country-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px;margin-bottom:11px}
+.country-card .route-map{margin-bottom:12px}
+.country-card h3{font-size:15.5px;font-weight:800}
+.country-card .desc{font-size:12.5px;color:#5a6b67;margin-top:6px;line-height:1.7}
+.tl{margin-top:13px;border-left:2px solid var(--brand-soft);padding-left:14px}
+.tl .ev{position:relative;padding-bottom:13px}
+.tl .ev:last-child{padding-bottom:2px}
+.tl .ev::before{content:"";position:absolute;left:-19.5px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:var(--brand);border:2px solid #fff;box-shadow:0 0 0 2px var(--brand-soft)}
+.tl .ev .d{font-size:11px;font-weight:700;color:var(--brand)}
+.tl .ev .x{font-size:12.5px;color:#3d4f4b;line-height:1.6;margin-top:2px}
+.entry{background:var(--brand-softer);border-radius:11px;padding:12px 13px;margin-top:13px}
+.entry .lbl{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:4px}
+.entry p{font-size:12.5px;color:#2e403c;line-height:1.7}
+
+/* ===== 免责声明 ===== */
+.disclaimer{font-size:10.5px;color:#a8b5b2;line-height:1.8;text-align:center;padding:20px 18px 8px}
+.disclaimer a{color:var(--brand);text-decoration:none}
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;
+  border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer}
+.mrow:last-child{border-bottom:0}
+.mrow .ar{color:#c4cfcc;font-size:12.5px}
+
+/* 更新提示条 */
+.update-bar{display:flex;align-items:center;gap:7px;background:#e3f2ee;border-radius:10px;
+  padding:8px 12px;margin-bottom:10px;font-size:11.5px;color:#0a5f51;font-weight:600}
+.update-bar .dot{width:7px;height:7px;border-radius:50%;background:#0d7a68;flex-shrink:0;
+  animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* ===== 底部导航 ===== */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  display:flex;z-index:30}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:10px;color:#9aa8a4;cursor:pointer}
+.tab svg{width:20px;height:20px;stroke:#9aa8a4;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--brand);font-weight:700}
+.tab.on svg{stroke:var(--brand)}
+
+/* ===== 弹层 ===== */
+.toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);background:rgba(29,43,40,.92);
+  color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;z-index:99;opacity:0;pointer-events:none;
+  transition:.22s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.sheet-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;opacity:0;pointer-events:none;transition:.22s}
+.sheet-mask.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;
+  background:#fff;border-radius:20px 20px 0 0;padding:22px 18px calc(26px + env(safe-area-inset-bottom));
+  z-index:41;transition:.28s cubic-bezier(.4,0,.2,1)}
+.sheet.show{transform:translateX(-50%) translateY(0)}
+.sheet h3{font-size:17px;margin-bottom:6px}
+.sheet .d{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:16px}
+.btn-main{width:100%;background:var(--brand);color:#fff;border:0;border-radius:26px;padding:13px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 顶栏 -->
+  <header class="top">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+        <path d="M3 17c4-1 6-8 10-9 3-.8 5.5 1 8 3" stroke="#7fd4c4"/>
+        <circle cx="4" cy="17" r="2.2" fill="#fff" stroke="none"/>
+        <circle cx="20" cy="10.5" r="2.2" fill="#fff" stroke="none"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name" id="brandName">跨境周知</div>
+      <div class="slogan" id="slogan"></div>
+    </div>
+  </header>
+
+  <!-- ===== 页1：情报 ===== -->
+  <main class="page active" id="page-feed">
+    <div class="update-bar" id="updateBar">
+      <span class="dot"></span><span id="updateText">正在加载今日情报…</span>
+    </div>
+    <input class="search" id="searchBox" placeholder="搜索政策、国家、关键词">
+    <div class="chips" id="catChips"></div>
+    <div class="chips-label">区域筛选</div>
+    <div class="chips" id="regionChips"></div>
+    <div class="sec-head"><h3>近期要盯的日期</h3><span id="weekLabel"></span></div>
+    <div class="dates" id="dateCards"></div>
+    <div class="sec-head"><h3>精选情报</h3><span id="itemCount"></span></div>
+    <div id="newsList"></div>
+    <div class="disclaimer" id="disclaimer1"></div>
+  </main>
+
+  <!-- ===== 页2：详情 ===== -->
+  <main class="page" id="page-detail" style="padding-top:0">
+    <div class="detail-top">
+      <span class="back" onclick="go('feed')">‹ 情报</span>
+      <span class="t">情报详情</span>
+      <span class="icons">🔖 ⭐</span>
+    </div>
+    <div id="detailBody" style="padding:14px 14px 0"></div>
+  </main>
+
+  <!-- ===== 页3：成长 ===== -->
+  <main class="page" id="page-growth">
+    <p class="growth-intro">把本周变化翻译成你的学习清单</p>
+    <div class="grade-tabs" id="gradeTabs"></div>
+    <div class="sec-head" style="margin-top:4px"><h3>现在该补的知识</h3></div>
+    <div id="knowledgeList"></div>
+    <div class="sec-sub">语言与能力准备</div>
+    <div class="lang-row" id="langRow"></div>
+    <div class="disclaimer" id="disclaimer2"></div>
+  </main>
+
+  <!-- ===== 页4：国别 ===== -->
+  <main class="page" id="page-country">
+    <p class="growth-intro">从中指出路，看每条航线上的机会</p>
+    <div class="mode-tabs" id="modeTabs"></div>
+    <div id="countryList"></div>
+    <div class="disclaimer" id="disclaimer3"></div>
+  </main>
+
+  <!-- ===== 页5：我的 ===== -->
+  <main class="page" id="page-me">
+    <div class="k-card" style="display:flex;align-items:center;gap:12px;margin-top:4px">
+      <div class="ico" style="width:48px;height:48px;font-size:19px;border-radius:50%">跨</div>
+      <div>
+        <div style="font-size:16px;font-weight:800">跨境小同学</div>
+        <div style="font-size:11.5px;color:var(--sub);margin-top:2px">跨境电商专业 · 大一</div>
+      </div>
+      <span id="vipBadge" style="margin-left:auto;font-size:10.5px;padding:3px 11px;border-radius:20px;font-weight:700;background:#eef2f1;color:#7a8a86">免费用户</span>
+    </div>
+    <div class="k-card" style="padding:0;overflow:hidden">
+      <div class="mrow" onclick="openSheet()"><span>👑 我的订阅</span><span class="ar">›</span></div>
+      <div class="mrow" onclick="go('growth')"><span>📚 成长清单</span><span class="ar">›</span></div>
+      <div class="mrow" onclick="go('country')"><span>🌍 国别机会</span><span class="ar">›</span></div>
+      <div class="mrow" onclick="toast('已记录，后续按你的课程表推送')"><span>🎓 绑定我的课程</span><span class="ar">未绑定 ›</span></div>
+      <div class="mrow" onclick="toast('连续学习 3 天，继续保持！')"><span>🔥 连续学习</span><span class="ar">3 天 ›</span></div>
+    </div>
+    <div class="k-card" style="padding:0;overflow:hidden">
+      <div class="mrow" onclick="toast('感谢反馈，我们会尽快改进')"><span>💬 意见反馈</span><span class="ar">›</span></div>
+      <div class="mrow" onclick="toast('v1.0 · 学生创业项目')"><span>ℹ️ 关于我们</span><span class="ar">›</span></div>
+    </div>
+    <div class="disclaimer" id="disclaimer4"></div>
+  </main>
+
+  <!-- 底部导航 -->
+  <nav class="tabbar">
+    <div class="tab on" data-tab="feed" onclick="go('feed')">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h9"/></svg><span>情报</span>
+    </div>
+    <div class="tab" data-tab="growth" onclick="go('growth')">
+      <svg viewBox="0 0 24 24"><path d="M12 4L2 9l10 5 10-5-10-5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg><span>成长</span>
+    </div>
+    <div class="tab" data-tab="country" onclick="go('country')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z"/></svg><span>国别</span>
+    </div>
+    <div class="tab" data-tab="me" onclick="go('me')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg><span>我的</span>
+    </div>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="sheet-mask" id="sheetMask" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <h3>开通会员</h3>
+  <p class="d" id="sheetDesc"></p>
+  <button class="btn-main" onclick="closeSheet();toast('原型演示 · 正式上线后此处接入支付')">去支付</button>
+  <p class="d" style="text-align:center;margin:12px 0 0;cursor:pointer" onclick="closeSheet()">再想想</p>
+</div>
+
+<script>
+let D=null, curCat="全部", curRegion="全部区域", curGrade="大一", curMode="重点区域",
+    kw="", isVip=false, curDetail=null;
+
+const REGIONS=["全部区域","非洲","中东","东盟","欧盟"];
+
+async function init(){
+  try{ D=await (await fetch("content.json")).json(); }
+  catch(e){ document.getElementById("newsList").innerHTML='<div class="news">内容加载失败，请确认 content.json 在同一目录。</div>'; return; }
+
+  document.getElementById("slogan").textContent=D.meta.slogan;
+  document.getElementById("weekLabel").textContent=D.meta.week;
+  const ub=document.getElementById("updateText");
+  if(ub)ub.textContent=(D.meta.data_note||"今日情报已更新")+" · 自动抓取";
+  document.getElementById("itemCount").textContent="10 条";
+  const dis=D.disclaimer+' 会员价格为产品示意。';
+  ["disclaimer1","disclaimer2","disclaimer3","disclaimer4"].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.textContent=dis;
+  });
+
+  renderChips("catChips",D.filters.category,"cat");
+  renderChips("regionChips",D.filters.region,"region");
+  renderDates();
+  renderNews();
+  renderGrades();
+  renderModes();
+  document.getElementById("langRow").innerHTML=D.growth.language.map(l=>`<span class="lang-pill">${l}</span>`).join("");
+}
+
+/* ===== chips ===== */
+function renderChips(id,arr,type){
+  const cur=type==="cat"?curCat:curRegion;
+  document.getElementById(id).innerHTML=arr.map(c=>
+    `<div class="chip ${c===cur?'on':''}" onclick="setFilter('${type}','${c}')">${c}</div>`).join("");
+}
+function setFilter(type,val){
+  if(type==="cat")curCat=val; else curRegion=val;
+  renderChips("catChips",D.filters.category,"cat");
+  renderChips("regionChips",D.filters.region,"region");
+  renderNews();
+}
+
+/* ===== 日期卡 ===== */
+function renderDates(){
+  document.getElementById("dateCards").innerHTML=D.dates.map(d=>`
+    <div class="date-card" onclick="toast('${d.title.replace(/'/g,'')}')">
+      <div class="row"><span class="d">${d.day}</span><span class="m">${d.month}</span></div>
+      <div class="t">${d.title}</div>
+      <span class="tag">${d.tag}</span>
+    </div>`).join("");
+}
+
+/* ===== 情报列表 ===== */
+function renderNews(){
+  const list=D.items.filter(i=>
+    (curCat==="全部"||i.category===curCat)&&
+    (curRegion==="全部区域"||i.region===curRegion)&&
+    (!kw.trim()||(i.title+i.hotword+i.region+i.category).toLowerCase().includes(kw.trim().toLowerCase()))
+  );
+  const free=D.meta.free_count;
+  document.getElementById("newsList").innerHTML=list.length?list.map(it=>{
+    const locked=!isVip&&it.id>free;
+    return `
+    <div class="news ${locked?'locked':''}" onclick="${locked?`openSheet()`:`openDetail(${it.id})`}">
+      <div class="meta">
+        <span class="src">${it.category}</span>
+        <span class="date">${it.region} · ${it.date}</span>
+      </div>
+      <h4>${it.title}</h4>
+      <p>${it.facts[0]}</p>
+      <div class="dots">${[0,1,2,3,4,5].map(n=>`<i class="${n<2?'f':''}"></i>`).join("")}</div>
+    </div>`;
+  }).join(""):'<div class="news" style="text-align:center;color:#9aa8a4">该筛选下暂无内容</div>';
+}
+
+/* ===== 详情页 ===== */
+function openDetail(id){
+  const it=D.items.find(i=>i.id===id);
+  curDetail=it;
+  const r=it.route;
+  document.getElementById("detailBody").innerHTML=`
+    <div class="route-map">
+      <svg viewBox="0 0 340 130">
+        <path d="M45 95 Q170 8 295 88" fill="none" stroke="#c9a227" stroke-width="2.5" stroke-dasharray="6 5"/>
+        <circle cx="45" cy="95" r="6" fill="#c0392b"/>
+        <circle cx="295" cy="88" r="6" fill="#c0392b"/>
+        <text x="45" y="118" font-size="12" fill="#7a5c10" text-anchor="middle" font-weight="700">${r.from}</text>
+        <text x="295" y="111" font-size="12" fill="#7a5c10" text-anchor="middle" font-weight="700">${r.to}</text>
+        <text x="170" y="26" font-size="12" fill="#a8842a" text-anchor="middle" font-weight="700">${r.label}</text>
+      </svg>
+    </div>
+    <span class="hotword">${it.hotword}</span>
+    <h2>${it.title}</h2>
+    <div class="src-line">来源：${it.source} · ${it.date}</div>
+
+    <div class="fact-title">关键事实</div>
+    <ul class="facts">${it.facts.map(f=>`<li>${f}</li>`).join("")}</ul>
+
+    <div class="fact-title">讲解</div>
+    <div class="insight-block">
+      <div class="lbl">对学的和你</div>
+      <p>${it.insight_student}</p>
+    </div>
+    <div class="insight-block">
+      <div class="lbl">对做跨境的你</div>
+      <p>${it.insight_seller}</p>
+    </div>
+    <div class="tb-ref">
+      <div class="lbl">对应教材</div>
+      <div class="book">《${it.textbook.book}》 · ${it.textbook.chapter}</div>
+      <div class="point">知识点：${it.textbook.point}</div>
+    </div>
+    <button class="origin-btn" onclick="toast('原型演示 · 正式版跳转发布机构原文')">回到原文 ↗</button>
+    <div class="disclaimer">${D.disclaimer}</div>`;
+  go("detail");
+}
+
+/* ===== 成长页 ===== */
+function renderGrades(){
+  document.getElementById("gradeTabs").innerHTML=D.growth.grades.map(g=>
+    `<div class="${g===curGrade?'on':''}" onclick="setGrade('${g}')">${g}</div>`).join("");
+  renderKnowledge();
+}
+function setGrade(g){curGrade=g;renderGrades();}
+function renderKnowledge(){
+  const list=D.growth.knowledge.filter(k=>k.grade===curGrade);
+  document.getElementById("knowledgeList").innerHTML=list.map(k=>`
+    <div class="k-card" onclick="toast('原型演示 · 正式版展开知识点详解')">
+      <div class="head">
+        <div class="ico">HS</div>
+        <div class="t">${k.title}</div>
+        <div class="arrow">›</div>
+      </div>
+      <p>${k.desc}</p>
+      <div class="chapters">${k.chapters.map(c=>`<span>${c}</span>`).join("")}</div>
+      <div class="rel">可配合本学期教材：${k.related}</div>
+    </div>`).join("");
+}
+
+/* ===== 国别页 ===== */
+function renderModes(){
+  document.getElementById("modeTabs").innerHTML=D.countries.modes.map(m=>
+    `<div class="${m===curMode?'on':''}" onclick="setMode('${m}')">${m}</div>`).join("");
+  renderCountries();
+}
+function setMode(m){
+  curMode=m;renderModes();
+  toast(m==="全部区域"?"展示全部国家":"仅展示重点区域");
+}
+function renderCountries(){
+  let regions=D.countries.regions;
+  if(curMode==="重点区域")regions=regions.slice(0,2);
+  document.getElementById("countryList").innerHTML=regions.map(c=>{
+    const r=c.route;
+    return `
+    <div class="country-card">
+      <div class="route-map">
+        <svg viewBox="0 0 340 110">
+          <path d="M50 80 Q170 5 290 76" fill="none" stroke="#c9a227" stroke-width="2.5" stroke-dasharray="6 5"/>
+          <circle cx="50" cy="80" r="6" fill="#c0392b"/>
+          <circle cx="290" cy="76" r="6" fill="#c0392b"/>
+          <text x="50" y="102" font-size="12" fill="#7a5c10" text-anchor="middle" font-weight="700">中国</text>
+          <text x="290" y="99" font-size="12" fill="#7a5c10" text-anchor="middle" font-weight="700">${r.to}</text>
+          <text x="170" y="22" font-size="12" fill="#a8842a" text-anchor="middle" font-weight="700">${r.label}</text>
+        </svg>
+      </div>
+      <h3>${c.headline}</h3>
+      <p class="desc">${c.desc}</p>
+      <div class="tl">
+        ${c.timeline.map(e=>`<div class="ev"><div class="d">${e.date}</div><div class="x">${e.text}</div></div>`).join("")}
+      </div>
+      <div class="entry">
+        <div class="lbl">学生可以从这里切入</div>
+        <p>${c.entry}</p>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ===== 导航 / 弹层 ===== */
+const PAGES=["feed","detail","growth","country","me"];
+function go(p){
+  document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));
+  document.getElementById("page-"+p).classList.add("active");
+  document.querySelectorAll(".tab").forEach(el=>el.classList.toggle("on",el.dataset.tab===p||(p==="detail"&&el.dataset.tab==="feed")));
+  if(p==="me"){
+    const b=document.getElementById("vipBadge");
+    b.textContent=isVip?"专业版":"免费用户";
+    b.style.background=isVip?"linear-gradient(135deg,#0d7a68,#3aa694)":"#eef2f1";
+    b.style.color=isVip?"#fff":"#7a8a86";
+  }
+  window.scrollTo({top:0});
+}
+let tt;
+function toast(m){
+  const t=document.getElementById("toast");
+  t.textContent=m;t.classList.add("show");
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function openSheet(title,desc){
+  document.getElementById("sheet").querySelector("h3").textContent=title||"开通会员";
+  document.getElementById("sheetDesc").textContent=desc||"首月 1 元，解锁每日 10 条全部情报、成长知识清单与国别机会。次月起 9.9 元/月，随时可取消。";
+  document.getElementById("sheetMask").classList.add("show");
+  document.getElementById("sheet").classList.add("show");
+}
+function closeSheet(){
+  document.getElementById("sheetMask").classList.remove("show");
+  document.getElementById("sheet").classList.remove("show");
+}
+
+document.getElementById("searchBox").addEventListener("input",e=>{kw=e.target.value;renderNews();});
+
+init();
+</script>
+</body>
+</html>

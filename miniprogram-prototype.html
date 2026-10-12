@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨境周知 · 微信小程序原型</title>
+<style>
+:root{--phone:#1c1c1e;--screen:#f6f8f7;--ink:#1d2b28;--sub:#7a8a86;--brand:#0d7a68;--line:#e6edeb;--amber:#b8860b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:44px;flex-wrap:wrap;
+  background:radial-gradient(circle at 30% 15%,#1e3a35,#0c1512 70%);padding:40px 20px;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+
+/* 手机壳 */
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+.phone{width:340px;height:706px;background:var(--phone);border-radius:44px;padding:11px;position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 0 2px #333 inset}
+.phone::before{content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);width:100px;height:24px;
+  background:var(--phone);border-radius:0 0 16px 16px;z-index:10}
+.screen{width:100%;height:100%;background:var(--screen);border-radius:34px;overflow:hidden;display:flex;flex-direction:column}
+
+/* 状态栏+导航 */
+.wx-status{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+  font-size:12px;color:#fff;font-weight:600;background:#0d7a68;flex-shrink:0}
+.wx-nav{height:44px;background:#0d7a68;color:#fff;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.wx-nav .title{font-size:16px;font-weight:600}
+.wx-nav .back{position:absolute;left:14px;font-size:20px;line-height:1;cursor:pointer}
+.wx-capsule{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:76px;height:29px;
+  border:1px solid rgba(255,255,255,.3);border-radius:15px;display:flex;align-items:center;justify-content:space-around;font-size:13px}
+.wx-capsule .dot{width:1px;height:14px;background:rgba(255,255,255,.3)}
+
+.wx-body{flex:1;overflow-y:auto;background:var(--screen)}
+.wx-body::-webkit-scrollbar{width:0}
+
+/* 通用 */
+.srch{margin:12px 14px;background:#fff;border-radius:10px;padding:10px 14px;font-size:13px;color:#9aa8a4;
+  box-shadow:0 1px 6px rgba(13,122,104,.06)}
+.wx-chips{display:flex;gap:7px;overflow-x:auto;padding:0 14px;scrollbar-width:none}
+.wx-chips::-webkit-scrollbar{display:none}
+.wchip{flex:0 0 auto;padding:5px 13px;border-radius:18px;font-size:12px;background:#fff;color:#5a6b67;
+  border:1px solid var(--line);white-space:nowrap}
+.wchip.on{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:600}
+.lbl-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px}
+.lbl-row h3{font-size:14.5px;font-weight:700;color:var(--ink)}
+.lbl-row span{font-size:11px;color:var(--sub)}
+
+/* 日期卡 */
+.dates{display:flex;gap:9px;overflow-x:auto;padding:0 14px 6px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.dcard{flex:0 0 124px;background:#fff;border-radius:12px;padding:11px 12px;box-shadow:0 1px 6px rgba(13,122,104,.06)}
+.dcard .r{display:flex;align-items:baseline;gap:5px}
+.dcard .d{font-size:23px;font-weight:800;color:var(--brand)}
+.dcard .m{font-size:11px;color:var(--sub);font-weight:600}
+.dcard .t{font-size:11px;line-height:1.5;color:#3d4f4b;margin-top:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dcard .g{display:inline-block;font-size:9.5px;color:var(--brand);background:#e3f2ee;padding:1.5px 7px;border-radius:8px;margin-top:6px;font-weight:600}
+
+/* 情报卡 */
+.ncard{background:#fff;border-radius:12px;padding:13px 14px;margin:0 14px 9px;box-shadow:0 1px 6px rgba(13,122,104,.06);cursor:pointer}
+.ncard .mt{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ncard .src{font-size:10px;font-weight:600;color:var(--brand);background:#e3f2ee;padding:2px 7px;border-radius:5px}
+.ncard .dt{font-size:10px;color:#a8b5b2}
+.ncard h4{font-size:14px;font-weight:700;line-height:1.5;color:var(--ink)}
+.ncard p{font-size:12.5px;color:#5a6b67;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ncard .dots{display:flex;gap:5px;margin-top:8px}
+.ncard .dots i{width:5px;height:5px;border-radius:50%;background:var(--brand);opacity:.25}
+.ncard .dots i.f{opacity:1}
+
+/* 详情 */
+.rmap{background:#fdf6e3;border-radius:12px;padding:16px 14px 6px;margin:12px 14px}
+.rmap svg{width:100%;display:block}
+.hw{display:inline-block;font-size:11px;color:var(--brand);background:#e3f2ee;padding:3px 10px;border-radius:6px;font-weight:700;margin:0 14px 7px}
+.dh{font-size:18px;font-weight:800;line-height:1.45;color:var(--ink);padding:0 14px}
+.dsrc{font-size:11px;color:var(--sub);padding:7px 14px 13px;border-bottom:1px solid var(--line);margin:0 14px 0}
+.fact-t{font-size:13.5px;font-weight:800;padding:14px 16px 7px;color:var(--ink)}
+.facts{padding:0 16px}
+.facts li{display:flex;gap:8px;font-size:12.5px;color:#3d4f4b;padding:4px 0;line-height:1.65;list-style:none}
+.facts li::before{content:"✓";color:var(--brand);font-weight:800;flex-shrink:0}
+.ibox{background:#f2f9f7;border-radius:12px;padding:12px 14px;margin:0 14px 8px}
+.ibox .l{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:4px}
+.ibox p{font-size:12.5px;color:#2e403c;line-height:1.72}
+.tbox{background:#fdf6e3;border-radius:12px;padding:11px 14px;margin:0 14px 8px}
+.tbox .l{font-size:12px;font-weight:800;color:var(--amber);margin-bottom:3px}
+.tbox .b{font-size:12.5px;font-weight:700;color:#7a5c10}
+.tbox .p{font-size:11.5px;color:#96742c;margin-top:2px}
+.obtn{display:block;margin:12px 14px 0;text-align:center;background:#fff;border:1px solid var(--line);
+  border-radius:22px;padding:11px;font-size:13px;font-weight:600;color:var(--brand)}
+.disc{font-size:10.5px;color:#a8b5b2;line-height:1.8;text-align:center;padding:16px 22px}
+
+/* 成长 */
+.gtabs{display:flex;background:#fff;border-radius:11px;padding:4px;margin:12px 14px;box-shadow:0 1px 6px rgba(13,122,104,.06)}
+.gtabs div{flex:1;text-align:center;padding:8px 0;font-size:12.5px;color:var(--sub);border-radius:8px;font-weight:600;transition:.15s}
+.gtabs div.on{background:var(--brand);color:#fff}
+.kcard{background:#fff;border-radius:12px;padding:13px 14px;margin:0 14px 9px;box-shadow:0 1px 6px rgba(13,122,104,.06)}
+.kcard .h{display:flex;gap:10px;align-items:flex-start}
+.kcard .ic{width:36px;height:36px;border-radius:9px;background:#e3f2ee;display:grid;place-items:center;
+  color:var(--brand);font-weight:800;font-size:13px;flex-shrink:0}
+.kcard .t{font-size:13.5px;font-weight:700;line-height:1.45;color:var(--ink)}
+.kcard .ar{margin-left:auto;color:#c4cfcc;font-size:15px}
+.kcard p{font-size:12px;color:#5a6b67;margin-top:8px;line-height:1.68}
+.kcard .ch{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.kcard .ch span{font-size:10px;background:#f2f9f7;color:var(--brand);padding:3px 9px;border-radius:6px;font-weight:600}
+.kcard .rel{font-size:10.5px;color:#a8b5b2;margin-top:8px;padding-top:7px;border-top:1px dashed var(--line)}
+.langs{display:flex;gap:7px;overflow-x:auto;padding:0 14px 4px;scrollbar-width:none}
+.langs::-webkit-scrollbar{display:none}
+.langs span{flex:0 0 auto;background:#fff;border-radius:18px;padding:7px 14px;font-size:12px;font-weight:600;
+  color:#3d4f4b;box-shadow:0 1px 6px rgba(13,122,104,.06)}
+
+/* 国别 */
+.mtabs{display:flex;gap:8px;margin:12px 14px}
+.mtabs div{flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:600;
+  background:#fff;color:var(--sub);box-shadow:0 1px 6px rgba(13,122,104,.06);border:1.5px solid transparent}
+.mtabs div.on{background:#e3f2ee;color:var(--brand);border-color:var(--brand)}
+.ccard{background:#fff;border-radius:12px;margin:0 14px 10px;padding:0 0 14px;box-shadow:0 1px 6px rgba(13,122,104,.06);overflow:hidden}
+.ccard .rmap{margin:12px 14px 10px}
+.ccard h3{font-size:14.5px;font-weight:800;padding:0 14px;color:var(--ink)}
+.ccard .ds{font-size:12px;color:#5a6b67;padding:6px 14px 0;line-height:1.68}
+.tl{margin:12px 14px 0;border-left:2px solid #e3f2ee;padding-left:13px}
+.tl .ev{position:relative;padding-bottom:12px}
+.tl .ev:last-child{padding-bottom:2px}
+.tl .ev::before{content:"";position:absolute;left:-18.5px;top:4px;width:9px;height:9px;border-radius:50%;
+  background:var(--brand);border:2px solid #fff;box-shadow:0 0 0 2px #e3f2ee}
+.tl .ev .d{font-size:10.5px;font-weight:700;color:var(--brand)}
+.tl .ev .x{font-size:12px;color:#3d4f4b;line-height:1.6;margin-top:2px}
+.entry{background:#f2f9f7;border-radius:10px;padding:11px 13px;margin:12px 14px 0}
+.entry .l{font-size:11.5px;font-weight:800;color:var(--brand);margin-bottom:3px}
+.entry p{font-size:12px;color:#2e403c;line-height:1.68}
+
+/* TabBar */
+.tabbar{height:52px;background:#fafafa;border-top:1px solid var(--line);display:flex;flex-shrink:0}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:#9aa8a4}
+.tb .ic{font-size:19px;line-height:1;filter:grayscale(1);opacity:.5}
+.tb.on{color:var(--brand);font-weight:700}
+.tb.on .ic{filter:none;opacity:1}
+
+/* 说明 */
+.notes{max-width:380px;color:#c9d8d5;font-size:13.5px;line-height:1.85}
+.notes h2{color:#fff;font-size:19px;margin-bottom:6px}
+.notes .lead{color:#8ba5a0;font-size:12.5px;margin-bottom:20px}
+.notes h3{color:#fff;font-size:14px;margin:18px 0 8px;display:flex;align-items:center;gap:7px}
+.notes h3::before{content:"";width:3px;height:14px;background:var(--brand);border-radius:2px}
+.notes ul{list-style:none}
+.notes li{padding:4px 0 4px 16px;position:relative}
+.notes li::before{content:"·";position:absolute;left:4px;color:#3aa694;font-weight:800;font-size:16px}
+.notes .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.1);font-size:13px}
+.notes .kv b{color:#fff}
+.notes .hl{color:#7fd4c4}
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="screen">
+      <div class="wx-status"><span>9:41</span><span>●●●● 5G ▮</span></div>
+      <div class="wx-nav">
+        <span class="back" id="navBack" style="display:none" onclick="go('feed')">‹</span>
+        <span class="title" id="navTitle">跨境周知</span>
+        <span class="wx-capsule"><span>···</span><span class="dot"></span><span>◉</span></span>
+      </div>
+      <div class="wx-body" id="wxBody"></div>
+      <div class="tabbar">
+        <div class="tb on" data-tab="feed" onclick="go('feed')"><span class="ic">📰</span><span>情报</span></div>
+        <div class="tb" data-tab="growth" onclick="go('growth')"><span class="ic">🎓</span><span>成长</span></div>
+        <div class="tb" data-tab="country" onclick="go('country')"><span class="ic">🌍</span><span>国别</span></div>
+        <div class="tb" data-tab="me" onclick="go('me')"><span class="ic">👤</span><span>我的</span></div>
+      </div>
+    </div>
+  </div>
+  <p style="color:#6b8580;font-size:12px">↑ 小程序界面原型（可点击切换底部导航）</p>
+</div>
+
+<div class="notes">
+  <h2>跨境周知 · 小程序原型说明</h2>
+  <p class="lead">用于「找同学老师演示」和「参加创新创业比赛」的展示版</p>
+
+  <h3>怎么用</h3>
+  <ul>
+    <li>点击底部四个图标切换页面</li>
+    <li>点击情报卡片进入详情页（含航线图）</li>
+    <li>成长页可切换大一到大四</li>
+    <li>国别页可切换重点区域/全部国家</li>
+  </ul>
+
+  <h3>产品定位</h3>
+  <div class="kv"><span>目标人群</span><b>跨境电商专业学生</b></div>
+  <div class="kv"><span>核心价值</span><b>每日情报 + 课程同步</b></div>
+  <div class="kv"><span>四大页面</span><b>情报 / 成长 / 国别 / 我的</b></div>
+  <div class="kv"><span>定价</span><b>首月1元 / 9.9元每月</b></div>
+
+  <h3>演示话术（背下来）</h3>
+  <ul>
+    <li>"每日 10 条精选情报，每条都告诉你对应哪本教材、哪个章节"</li>
+    <li>"不只讲发生了什么，还讲这对学生和对卖家分别意味着什么"</li>
+    <li>"成长页告诉你现在该补什么知识，国别页告诉你哪个市场有机会"</li>
+    <li>"期末考点、论文选题、实习面试，素材都能从这里找"</li>
+  </ul>
+</div>
+
+<script>
+const ITEMS=[
+ {id:1,cat:"政策关税",region:"非洲",title:"对非53国零关税生效，南非成苹果首票入境",src:"新华社",dt:"2026年5月",hot:"对非零关税",route:{from:"中国",to:"南非",label:"零关税"},
+  facts:["自2026年5月1日起，中国对建交的最不发达国家实施特惠零关税政策","本次进口的南非苹果原关税税率由10%降至0","2026年我国与53个非洲建交国贸易总额达3480.5亿美元"],
+  stu:"这是《国际贸易实务》里「特惠关税与最不发达国家待遇」最鲜活的真实案例。期末考「关税减让的种类」时，你可以直接把这个例子写进去。",
+  sel:"非洲市场门槛正在快速下降，零关税加低竞争意味着可观的利润空间。冻干水果、坚果零食、轻小件快消品可以开始试单。",
+  tb:"《国际贸易实务》第8章 关税与非关税壁垒 · 特惠关税与最不发达国家待遇",lock:false},
+ {id:2,cat:"区域合作",region:"非洲",title:"第140届广交会10月15日在广州开幕",src:"广交会官网",dt:"2026年10月",hot:"广交会",route:{from:"中国",to:"全球",label:"展会"},
+  facts:["第140届广交会分三期举办，覆盖16大品类","本届首次设立跨境电商专区","预计到会境外采购商超20万人"],
+  stu:"广交会是《跨境电子商务概论》里「线上线下融合展会」的典型案例。大三实习的最佳跳板：会展助理、采购对接、翻译陪同。",
+  sel:"展会是接触源头工厂、拿到一手供货价的最好场合。新卖家先逛展、加厂家微信、比三家的价，比在线选品平台更实在。",
+  tb:"《跨境电子商务概论》第5章 跨境电商选品与供应链 · 线下展会与选品渠道",lock:false},
+ {id:3,cat:"区域合作",region:"东盟",title:"上半年跨境电商海外仓出口增长3.3倍",src:"新华网",dt:"2026年7月",hot:"海外仓",route:{from:"中国",to:"东盟",label:"海外仓"},
+  facts:["上半年我国跨境电商海外仓出口同比增长3.3倍","东南亚为主要增量市场","海外仓模式占比首次超过直邮小包"],
+  stu:"《跨境电商服务概论》第5章「国际物流模式选择」的直接印证。这道题去年期末考过原题——「比较直邮与海外仓的适用场景」。",
+  sel:"行业在集体转向备货模式，风险也随之转移——库存压在海外，卖不动就是真金白银的损失。新手先从平台仓起步。",
+  tb:"《跨境电商服务概论》第5章 国际物流模式与选择 · 海外仓与直邮对比",lock:false},
+ {id:4,cat:"区域合作",region:"欧盟",title:"上半年对共建一带一路国家进出口12.97万亿",src:"新华网",dt:"2026年7月",hot:"一带一路",route:{from:"中国",to:"一带一路国家",label:"外贸"},
+  facts:["上半年对共建一带一路国家进出口12.97万亿元","占外贸总值比重继续提升","中欧班列为主要物流支撑"],
+  stu:"《国际贸易实务》第10章「区域经济一体化」的数据支撑。论文里用官方数据，老师一眼就能看出你查过原文。",
+  sel:"一带一路沿线新兴市场正在成为蓝海，本地电商渗透率低、竞争小，适合有耐心的卖家提前布局。",
+  tb:"《国际贸易实务》第10章 区域经济一体化 · 共建一带一路与贸易便利化",lock:true},
+ {id:5,cat:"政策关税",region:"欧盟",title:"欧盟拟对低价小包征收处理费，直邮模式承压",src:"路透社",dt:"2026年9月",hot:"小包处理费",route:{from:"中国",to:"欧盟",label:"关税"},
+  facts:["欧盟提议对低价小包裹征收统一处理费","主要针对单件价值低于150欧元的包裹","实施时间待欧洲议会审议"],
+  stu:"《国际贸易实务》第8章「非关税壁垒」的最新形态：不直接加关税，而是用处理费抬高成本，是论述题的高分素材。",
+  sel:"靠低价直邮铺货的利润模型正在被政策逐个击穿。应对方向只有一个：提前转向海外仓和本地化履约。",
+  tb:"《国际贸易实务》第8章 关税与非关税壁垒 · 非关税壁垒的新形态",lock:true},
+ {id:6,cat:"合规数智",region:"欧盟",title:"欧盟EPR合规收紧，未注册卖家被限制销售",src:"亚马逊卖家中心",dt:"2026年9月",hot:"EPR",route:{from:"中国",to:"欧盟",label:"合规"},
+  facts:["德法要求包装类、电子电气类卖家提供EPR注册号","未提交者相关ASIN将被下架","账户可能被限制销售权限"],
+  stu:"《跨境电商运营实务》第6章「平台运营规则」的真实案例：合规不是选做题，是市场准入的门票。面试答EPR比答VAT更显专业。",
+  sel:"EPR费用按品类和销量计算，做欧洲站之前先把这笔成本算进定价，否则卖得越多亏得越多。",
+  tb:"《跨境电商运营实务》第6章 主流平台运营规则 · 欧洲市场合规要求",lock:true},
+ {id:7,cat:"合规数智",region:"中东",title:"沙特SABER认证新增品类，电子消费品影响大",src:"雨果跨境",dt:"2026年10月",hot:"SABER",route:{from:"中国",to:"沙特",label:"认证"},
+  facts:["沙特新增多类电子消费品纳入SABER强制认证","未认证货物将在清关时被扣留","认证周期约2-4周"],
+  stu:"《跨境电商服务概论》第4章「通关与检验检疫」的典型案例。对比记忆：欧盟CE，沙特SABER，美国FCC。",
+  sel:"中东客单价高、竞争小，但认证门槛在快速抬升。想切入沙特的卖家，先把SABER认证成本算清楚。",
+  tb:"《跨境电商服务概论》第4章 跨境电商物流与通关 · 各国认证体系",lock:true},
+ {id:8,cat:"区域合作",region:"东盟",title:"TikTok Shop东南亚直播GMV翻倍，货架场景放量",src:"36氪出海",dt:"2026年10月",hot:"直播电商",route:{from:"中国",to:"东盟",label:"直播电商"},
+  facts:["东南亚直播GMV同比增长超100%","货架场景订单占比首次超过30%","美妆、家居、3C配件为热销品类"],
+  stu:"《跨境电子商务概论》第3章「东南亚市场」的动态更新：教材写的还是铺货模式，行业已进化到直播加货架双轮驱动。",
+  sel:"货架占比上升意味着搜索优化重新变得重要。双语主播在东南亚月薪已过万，是学生最对口的兼职方向之一。",
+  tb:"《跨境电子商务概论》第3章 全球主要跨境电商市场 · 东南亚内容电商",lock:true},
+ {id:9,cat:"政策关税",region:"全部区域",title:"跨境电商出口免税政策延续至2027年底",src:"财政部官网",dt:"2026年9月",hot:"免退税",route:{from:"中国",to:"全球",label:"税收"},
+  facts:["零售出口免征增值税政策延长至2027年12月31日","无票免税覆盖综试区内零售出口企业","所得税核定征收同步延续"],
+  stu:"《国际贸易实务》出口退税章节的政策动态。政策延续到2027年底，正好覆盖你毕业求职的年份。",
+  sel:"免税政策是注册在综试区内的卖家才享有的，注册地址有讲究，能省真金白银。",
+  tb:"《国际贸易实务》第9章 出口退税与税收优惠 · 无票免税政策",lock:true},
+ {id:10,cat:"合规数智",region:"全部区域",title:"AI选品工具渗透率过半，中小卖家开始用AI做客服和Listing",src:"亿邦动力",dt:"2026年10月",hot:"AI工具",route:{from:"中国",to:"全球",label:"AI"},
+  facts:["超50%中小卖家已使用AI选品或AI生成Listing","AI客服覆盖多语种咨询","主流平台陆续上线官方AI工具"],
+  stu:"《人工智能基础与Python实践》课的直接应用场景：你正在学的Python加API调用，就是这批工具的底层原理。",
+  sel:"AI适合做初稿（Listing、客服话术、选品报告），但本地化和合规判断仍需人工把关。把AI当实习生用。",
+  tb:"《跨境电商运营实务》第8章 数字化运营工具 · AI在跨境电商中的应用",lock:true}
+];
+
+const GROWTH={
+ "大一":[
+  {t:"海关监管代码 1210 / 9610 / 9710 / 9810",d:"背下这四个代码，跨境电商的所有业务模式就都能对号入座——报关和物流方向的基础中的基础。",ch:["课本解读","HS编码与通关"],r:"《跨境电商服务概论》第4章"},
+  {t:"HS编码归类与关税计算",d:"同样一件商品，归类不同关税就不同。归类是报关的生命线，也是最容易失分的地方。",ch:["课本解读","归类练习"],r:"《国际贸易实务》第8章"},
+  {t:"原产地规则与特惠安排",d:"哪些商品享有特惠关税，哪些单证决定原产地资格，证书要提前多久准备。",ch:["课本解读","案例分析"],r:"《国际贸易实务》第10章"},
+  {t:"海外仓、头程、尾程与库存周转",d:"海外仓本质是把「运」换成「储」：头程批量海运降成本，尾程本地配送保时效。",ch:["课本解读","库存计划"],r:"《跨境电商服务概论》第5章"}
+ ],
+ "大二":[
+  {t:"主流平台运营规则对比（亚马逊 / TikTok / Temu）",d:"三大平台的流量逻辑、定价权、合规要求完全不同。做运营的第一步，是想清楚押哪个平台。",ch:["平台对比","规则解读"],r:"《跨境电商运营实务》第6-7章"},
+  {t:"跨境电商选品方法论",d:"选品不是找爆款，是找「你能持续供货且有利润」的品。",ch:["选品工具","成本测算"],r:"《跨境电子商务概论》第5章"}
+ ],
+ "大三":[
+  {t:"VAT、EPR 与欧洲市场合规体系",d:"欧洲市场的门槛就是合规门槛。税务、环保、产品认证三套体系，决定你能不能长期做下去。",ch:["税务实务","合规流程"],r:"《跨境电商运营实务》第6章"},
+  {t:"跨境电商数据分析与店铺诊断",d:"看懂转化率、客单价、退货率、广告ACOS，才能判断店铺是真赚钱还是假繁荣。",ch:["指标解读","诊断实操"],r:"《跨境电商运营实务》第8章"}
+ ],
+ "大四":[
+  {t:"独立站与品牌出海路径",d:"从平台卖货走向品牌沉淀，是职业天花板最高的一条路。",ch:["建站基础","品牌案例"],r:"《跨境电子商务概论》第6章"},
+  {t:"求职方向与简历中的跨境亮点",d:"运营、选品、合规、物流、海外营销——把你的课程项目翻译成岗位语言。",ch:["岗位地图","简历工作坊"],r:"职业规划拓展"}
+ ]
+};
+
+const COUNTRIES=[
+ {n:"非洲",to:"南非",lb:"零关税",h:"对非零关税：南非是第一站",d:"中国对建交的最不发达国家实施特惠零关税政策。2026年与53个非洲建交国贸易总额达3480.5亿美元。",
+  tl:[["2026.2.14","中方宣布，5月1日起对53个非洲建交国实施零关税政策。"],["2026.5.1","零关税生效。南非苹果自深圳口岸入境，关税由10%降至0。"],["2026.4.30","对最不发达非洲国家的特惠零关税政策进入执行阶段。"]],
+  e:"非洲好物进出口正当时，关税成本下降，适合做选品分析、企划、运营类实习方向。"},
+ {n:"东盟",to:"曼谷",lb:"直播电商",h:"东盟：直播电商增长最快的市场",d:"TikTok Shop直播GMV翻倍，货架场景占比超30%。门槛低、增长快、对中国供应链依赖度高。",
+  tl:[["2026.10","TikTok Shop东南亚直播GMV同比增长超100%。"],["2026.7","海外仓出口增长3.3倍，东盟为主要增量市场。"],["2026.6","RCEP关税减让红利持续释放。"]],
+  e:"双语主播、直播运营、选品专员是学生最对口的实习方向，兼职机会多、门槛低。"},
+ {n:"欧盟",to:"汉堡",lb:"合规",h:"欧盟：合规门槛最高，也最锻炼人",d:"EPR、VAT、小包处理费接连落地，低价直邮模式承压，合规与本地化是关键词。",
+  tl:[["2026.9","欧盟拟对低价小包征收统一处理费。"],["2026.9","EPR合规收紧，未注册卖家相关ASIN被下架。"],["2026.6","中欧班列跨境电商专列运价下降约12%。"]],
+  e:"合规专员、VAT税务助理岗位需求上升，适合细心、英文好的同学。"},
+ {n:"中东",to:"利雅得",lb:"认证",h:"中东：高客单价的新兴市场",d:"沙特、阿联酋为主力市场，客单价高于东南亚，SABER认证成为新门槛。",
+  tl:[["2026.10","沙特SABER认证新增品类，电子消费品影响大。"],["2026.5","斋月前家居、礼品、香水品类需求旺盛。"],["2026.3","中东跨境电商订单量持续增长。"]],
+  e:"文化适配是最大门槛，选品、美工、文案都需考虑当地习俗，适合研究型同学切入。"}
+];
+
+let isVip=false,curTab="feed",curDetail=null,curGrade="大一",curMode="重点区域";
+const body=()=>document.getElementById("wxBody");
+const routeSVG=(to,label)=>`
+  <div class="rmap"><svg viewBox="0 0 300 100">
+    <path d="M42 72 Q150 5 258 68" fill="none" stroke="#c9a227" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <circle cx="42" cy="72" r="5.5" fill="#c0392b"/><circle cx="258" cy="68" r="5.5" fill="#c0392b"/>
+    <text x="42" y="92" font-size="11" fill="#7a5c10" text-anchor="middle" font-weight="700">中国</text>
+    <text x="258" y="90" font-size="11" fill="#7a5c10" text-anchor="middle" font-weight="700">${to}</text>
+    <text x="150" y="20" font-size="11" fill="#a8842a" text-anchor="middle" font-weight="700">${label}</text>
+  </svg></div>`;
+
+const PAGES={
+  feed(){
+    document.getElementById("navTitle").textContent="情报";
+    document.getElementById("navBack").style.display="none";
+    return `
+    <div class="srch">🔍 搜索政策、国家、关键词</div>
+    <div class="wx-chips">
+      <span class="wchip on">全部</span><span class="wchip">政策关税</span>
+      <span class="wchip">区域合作</span><span class="wchip">合规数智</span>
+    </div>
+    <div class="lbl-row"><h3>近期要盯的日期</h3><span>今日已更新</span></div>
+    <div class="dates">
+      <div class="dcard"><div class="r"><span class="d">15</span><span class="m">10月</span></div><div class="t">第140届广交会开幕，分三期举办</div><span class="g">展会</span></div>
+      <div class="dcard"><div class="r"><span class="d">4</span><span class="m">11月</span></div><div class="t">广交会闭幕，结合实习观察展会出口接单</div><span class="g">实习</span></div>
+      <div class="dcard"><div class="r"><span class="d">31</span><span class="m">2027年</span></div><div class="t">跨境电商出口免退税政策执行至2027年底</div><span class="g">政策</span></div>
+    </div>
+    <div class="lbl-row"><h3>精选情报</h3><span>10 条</span></div>
+    ${ITEMS.map(i=>{
+      const lk=!isVip&&i.lock;
+      return `<div class="ncard" onclick="${lk?"go('vip')":`openDetail(${i.id})`}">
+        <div class="mt"><span class="src">${i.cat}</span><span class="dt">${i.region} · ${i.dt}</span></div>
+        <h4>${i.title}</h4>
+        <p>${i.facts[0]}</p>
+        <div class="dots">${[0,1,2,3,4,5].map(n=>`<i class="${n<2?'f':''}"></i>`).join("")}</div>
+      </div>`;
+    }).join("")}
+    <div class="disc">本原型只整理公开的政策与行业信息并做学习解读，不是新闻报道；每条内容以发布机构原文为准。</div>`;
+  },
+
+  detail(){
+    const it=curDetail;
+    document.getElementById("navTitle").textContent="情报详情";
+    document.getElementById("navBack").style.display="block";
+    return `
+    ${routeSVG(it.route.to,it.route.label)}
+    <span class="hw">${it.hot}</span>
+    <div class="dh">${it.title}</div>
+    <div class="dsrc">来源：${it.src} · ${it.dt}</div>
+    <div class="fact-t">关键事实</div>
+    <ul class="facts">${it.facts.map(f=>`<li>${f}</li>`).join("")}</ul>
+    <div class="fact-t">讲解</div>
+    <div class="ibox"><div class="l">对学的和你</div><p>${it.stu}</p></div>
+    <div class="ibox"><div class="l">对做跨境的你</div><p>${it.sel}</p></div>
+    <div class="tbox"><div class="l">对应教材</div><div class="b">${it.tb.split(" · ")[0]}</div><div class="p">知识点：${it.tb.split(" · ")[1]||""}</div></div>
+    <div class="obtn">回到原文 ↗</div>
+    <div class="disc">本原型只整理公开信息并做学习解读，以发布机构原文为准。</div>`;
+  },
+
+  growth(){
+    document.getElementById("navTitle").textContent="成长";
+    document.getElementById("navBack").style.display="none";
+    const list=GROWTH[curGrade]||[];
+    return `
+    <div class="lbl-row" style="padding-top:12px"><h3>把本周变化翻译成你的学习清单</h3></div>
+    <div class="gtabs">${["大一","大二","大三","大四"].map(g=>
+      `<div class="${g===curGrade?'on':''}" onclick="setGrade('${g}')">${g}</div>`).join("")}</div>
+    <div class="lbl-row"><h3>现在该补的知识</h3></div>
+    ${list.map(k=>`
+      <div class="kcard">
+        <div class="h"><div class="ic">HS</div><div class="t">${k.t}</div><div class="ar">›</div></div>
+        <p>${k.d}</p>
+        <div class="ch">${k.ch.map(c=>`<span>${c}</span>`).join("")}</div>
+        <div class="rel">可配合本学期教材：${k.r}</div>
+      </div>`).join("")}
+    <div class="lbl-row"><h3>语言与能力准备</h3></div>
+    <div class="langs">
+      <span>英语（必学）</span><span>跨文化沟通</span><span>商务谈判</span><span>数据分析基础</span>
+    </div>
+    <div class="disc" style="padding-top:20px">本原型只整理公开信息并做学习解读。</div>`;
+  },
+
+  country(){
+    document.getElementById("navTitle").textContent="国别";
+    document.getElementById("navBack").style.display="none";
+    const list=curMode==="重点区域"?COUNTRIES.slice(0,2):COUNTRIES;
+    return `
+    <div class="lbl-row" style="padding-top:12px"><h3>从中国出发，看每条航线上的机会</h3></div>
+    <div class="mtabs">
+      <div class="${curMode==='重点区域'?'on':''}" onclick="setMode('重点区域')">重点区域</div>
+      <div class="${curMode==='全部国家'?'on':''}" onclick="setMode('全部国家')">全部国家</div>
+    </div>
+    ${list.map(c=>`
+      <div class="ccard">
+        ${routeSVG(c.to,c.lb)}
+        <h3>${c.h}</h3>
+        <div class="ds">${c.d}</div>
+        <div class="tl">${c.tl.map(e=>`<div class="ev"><div class="d">${e[0]}</div><div class="x">${e[1]}</div></div>`).join("")}</div>
+        <div class="entry"><div class="l">学生可以从这里切入</div><p>${c.e}</p></div>
+      </div>`).join("")}
+    <div class="disc">本原型只整理公开信息并做学习解读。</div>`;
+  },
+
+  vip(){
+    document.getElementById("navTitle").textContent="开通会员";
+    document.getElementById("navBack").style.display="none";
+    return `
+    <div class="kcard" style="text-align:center;margin-top:14px;padding:20px 16px">
+      <div style="font-size:13px;color:#7a8a86;font-weight:600">免费版</div>
+      <div style="font-size:30px;font-weight:800;color:#1d2b28;margin:6px 0">¥0</div>
+      <div style="font-size:12.5px;color:#7a8a86;text-align:left;line-height:2.1;margin-top:10px">
+        ✓ 每日前 3 条情报摘要<br>✓ 基础内容板块浏览<br>
+        <span style="color:#c4cfcc">✕ 每日全部 10 条情报</span><br>
+        <span style="color:#c4cfcc">✕ 学习解读与教材匹配</span><br>
+        <span style="color:#c4cfcc">✕ 成长清单与国别机会</span>
+      </div>
+    </div>
+    <div class="kcard" style="border:2px solid #0d7a68;background:linear-gradient(180deg,#f7fffd,#fff);text-align:center;padding:20px 16px;position:relative;margin-top:18px">
+      <span style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#0d7a68;color:#fff;font-size:10.5px;padding:3px 14px;border-radius:20px;font-weight:700">推荐</span>
+      <div style="font-size:13px;color:#7a8a86;font-weight:600">专业版</div>
+      <div style="font-size:32px;font-weight:800;color:#1d2b28;margin:6px 0">¥9.9<span style="font-size:13px;font-weight:500;color:#7a8a86"> / 月</span></div>
+      <div style="font-size:12.5px;color:#5a6b67;text-align:left;line-height:2.1;margin-top:12px">
+        ✓ 每日全部 10 条情报<br>✓ 每条附「对学生 / 对卖家」双重解读<br>
+        ✓ 教材章节知识点精准匹配<br>✓ 成长清单（大一到大四）<br>✓ 国别机会与政策时间线<br>✓ 首月 1 元体验
+      </div>
+      <div onclick="buy()" style="margin-top:16px;background:#0d7a68;color:#fff;border-radius:24px;padding:13px;font-size:15px;font-weight:700">立即订阅 · 首月 1 元</div>
+      <p style="font-size:11px;color:#a8b5b2;margin-top:9px">到期自动停止，随时可取消</p>
+    </div>
+    <div class="kcard" style="text-align:center;font-size:13px;color:#0d7a68;font-weight:600;margin-top:14px" onclick="alert('演示版本：正式上线后可分享邀请链接')">
+      邀请同学 · 双方各得 7 天 ›
+    </div>`;
+  },
+
+  me(){
+    document.getElementById("navTitle").textContent="我的";
+    document.getElementById("navBack").style.display="none";
+    const rows=[["👑","我的订阅",isVip?"专业版":"免费用户"],["📚","成长清单",""],
+      ["🌍","国别机会",""],["🎓","绑定我的课程","未绑定"],["🔥","连续学习","3 天"],
+      ["💬","意见反馈",""],["ℹ️","关于我们","v1.0"]];
+    return `
+    <div class="kcard" style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:16px">
+      <div class="ic" style="width:50px;height:50px;border-radius:50%;font-size:19px">跨</div>
+      <div><div style="font-size:15.5px;font-weight:800">跨境小同学</div>
+      <div style="font-size:11.5px;color:#7a8a86;margin-top:3px">跨境电商专业 · 大一</div></div>
+      <span style="margin-left:auto;font-size:10.5px;padding:3px 11px;border-radius:20px;font-weight:700;
+        background:${isVip?'linear-gradient(135deg,#0d7a68,#3aa694)':'#eef2f1'};color:${isVip?'#fff':'#7a8a86'}">${isVip?'专业版':'免费用户'}</span>
+    </div>
+    <div class="kcard" style="padding:0;overflow:hidden">
+      ${rows.map(r=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid #f2f7f6;font-size:13px">
+        <span>${r[0]} ${r[1]}</span><span style="color:#c4cfcc;font-size:12px">${r[2]} ›</span></div>`).join("")}
+    </div>
+    <div class="disc">学生创业项目 · 欢迎反馈</div>`;
+  }
+};
+
+function go(t){
+  if(t==="vip"){document.getElementById("navTitle").textContent="开通会员";}
+  if(t==="detail"&&curDetail)t="detail";
+  document.getElementById("wxBody").innerHTML=PAGES[t]?PAGES[t]():"";
+  document.getElementById("wxBody").scrollTop=0;
+  document.querySelectorAll(".tb").forEach(el=>el.classList.toggle("on",el.dataset.tab===t||(t==="detail"&&el.dataset.tab==="feed")));
+}
+function openDetail(id){
+  curDetail=ITEMS.find(i=>i.id===id);
+  go("detail");
+}
+function setGrade(g){curGrade=g;go("growth");}
+function setMode(m){curMode=m;go("country");}
+function buy(){
+  alert("演示版本\n\n正式上线后将接入微信支付\n首月 1 元，次月起 9.9 元/月");
+  isVip=true;go("feed");
+}
+go("feed");
+</script>
+</body>
+</html>

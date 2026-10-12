@@ -1,0 +1,18 @@
+{
+  "name": "跨境电商日报",
+  "short_name": "跨境日报",
+  "description": "每天10分钟，看懂跨境行业，同步你的专业课",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fa",
+  "theme_color": "#1a1f36",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Crect width='192' height='192' rx='42' fill='%232f6bff'/%3E%3Ctext x='96' y='128' font-size='96' font-family='PingFang SC,sans-serif' font-weight='bold' fill='white' text-anchor='middle'%3E%E8%B7%A8%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
