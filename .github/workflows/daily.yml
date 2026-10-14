@@ -43,21 +43,16 @@ jobs:
         run: |
           git config user.name "跨境周知机器人"
           git config user.email "bot@users.noreply.github.com"
-
-          for f in app/content.json content.json pending_news.json fetch.log; do
-            [ -f "$f" ] && git add "$f" || true
-          done
-
+          git rm --cached fetch.log pending_news.json 2>/dev/null || true
+          echo "fetch.log" >> .gitignore
+          echo "pending_news.json" >> .gitignore
+          git add .gitignore app/content.json content.json
           if git diff --staged --quiet; then
             echo "今日内容无变化，跳过提交"
             exit 0
           fi
-
-          git commit -m "🤖 每日情报自动更新 $(date -u '+%Y-%m-%d')"
-
-          git pull --rebase --autostash origin ${GITHUB_REF_NAME:-main} || true
+          git commit -m "每日情报自动更新 $(date -u '+%Y-%m-%d')"
           git push
-          echo "✅ 已提交并推送"
 
       - name: 上传运行日志
         if: always()
